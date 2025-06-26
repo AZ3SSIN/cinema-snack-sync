@@ -1,7 +1,14 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Film, MapPin, Calendar, ShoppingCart, Clock, LogOut, Home } from "lucide-react";
+import {
+  Film,
+  MapPin,
+  Calendar,
+  ShoppingCart,
+  Clock,
+  LogOut,
+  Home,
+} from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { getCurrentUser } from "@/utils/userTickets";
 import { useToast } from "@/hooks/use-toast";
@@ -35,39 +42,50 @@ const Navigation = () => {
     <nav className="border-b border-border/40 backdrop-blur-sm bg-card-black/80 sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary-yellow rounded-lg flex items-center justify-center">
-              <span className="text-black font-bold text-sm">GSC</span>
+          <div className="flex items-center space-x-2 pr-3">
+            <div className="w-20 h-20 flex items-center justify-center mr-3">
+              <img
+                src="https://www.gsc.com.my/_nuxt/img/logo.4f87efa.png"
+                alt="GSC Logo"
+                className="w-20 h-20 object-contain"
+              />
             </div>
-            <span className="text-xl font-bold text-white">Cinema Live</span>
           </div>
-          
+
           {/* Navigation Links */}
           <div className="hidden md:flex items-center space-x-6">
             <Link to="/home">
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 className={`text-white hover:text-black hover:bg-primary-yellow ${
-                  isActive('/home') ? 'bg-primary-yellow text-black' : ''
+                  isActive("/home") ? "bg-primary-yellow text-black" : ""
                 }`}
               >
                 <Home className="h-4 w-4 mr-2" />
                 Home
               </Button>
             </Link>
-            <Button variant="ghost" className="text-white hover:text-black hover:bg-primary-yellow">
+            <Button
+              variant="ghost"
+              className="text-white hover:text-black hover:bg-primary-yellow"
+            >
               <Film className="h-4 w-4 mr-2" />
               Showtime by Movies
             </Button>
-            <Button variant="ghost" className="text-white hover:text-black hover:bg-primary-yellow">
+            <Button
+              variant="ghost"
+              className="text-white hover:text-black hover:bg-primary-yellow"
+            >
               <MapPin className="h-4 w-4 mr-2" />
               Showtimes by Cinemas
             </Button>
             <Link to="/hall-booking">
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 className={`text-white hover:text-black hover:bg-primary-yellow ${
-                  isActive('/hall-booking') ? 'bg-primary-yellow text-black' : ''
+                  isActive("/hall-booking")
+                    ? "bg-primary-yellow text-black"
+                    : ""
                 }`}
               >
                 <Calendar className="h-4 w-4 mr-2" />
@@ -75,10 +93,10 @@ const Navigation = () => {
               </Button>
             </Link>
             <Link to="/hall-menu">
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 className={`text-white hover:text-black hover:bg-primary-yellow ${
-                  isActive('/hall-menu') ? 'bg-primary-yellow text-black' : ''
+                  isActive("/hall-menu") ? "bg-primary-yellow text-black" : ""
                 }`}
               >
                 <ShoppingCart className="h-4 w-4 mr-2" />
@@ -86,10 +104,10 @@ const Navigation = () => {
               </Button>
             </Link>
             <Link to="/countdown">
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 className={`text-white hover:text-black hover:bg-primary-yellow ${
-                  isActive('/countdown') ? 'bg-primary-yellow text-black' : ''
+                  isActive("/countdown") ? "bg-primary-yellow text-black" : ""
                 }`}
               >
                 <Clock className="h-4 w-4 mr-2" />
@@ -99,15 +117,11 @@ const Navigation = () => {
           </div>
 
           <div className="flex items-center space-x-4">
-            <span className="text-sm text-muted-foreground">
-              {currentTime.toLocaleTimeString()}
-            </span>
             {currentUser && (
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-white">Welcome, {currentUser.name}</span>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={handleLogout}
                   className="border-primary-yellow/30 text-primary-yellow hover:bg-primary-yellow hover:text-black"
                 >
