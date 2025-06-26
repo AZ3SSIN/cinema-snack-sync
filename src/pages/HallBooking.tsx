@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, ChevronRight, Clock, MapPin, Film, CreditCard } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, MapPin, Film, CreditCard, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { isUserLoggedIn, getCurrentUser, saveDynamicBooking, UserTicket } from "@/utils/userTickets";
 import { useToast } from "@/hooks/use-toast";

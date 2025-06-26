@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShoppingCart, Clock, Star } from "lucide-react";
+import { ShoppingCart, Clock, Star, Calendar } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { isUserLoggedIn, getCurrentUser, getUserTickets } from "@/utils/userTickets";
 import { useToast } from "@/hooks/use-toast";
