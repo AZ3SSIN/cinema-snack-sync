@@ -3,43 +3,42 @@
 @tailwind components;
 @tailwind utilities;
 
-/* GSC Cinema Brand Colors */
+/* New Color Palette */
 :root {
-  --gsc-red: #E31E24;
-  --gsc-gold: #FFD700;
-  --gsc-dark: #1a1a1a;
-  --gsc-gray: #2a2a2a;
+  --primary-yellow: #fee101;
+  --background-dark: #292829;
+  --card-black: #000000;
 }
 
 @layer base {
   :root {
-    --background: 220 13% 8%;
-    --foreground: 210 40% 98%;
+    --background: 0 0% 16%; /* #292829 */
+    --foreground: 0 0% 100%; /* white */
 
-    --card: 224 12% 12%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 0%; /* #000000 */
+    --card-foreground: 0 0% 100%; /* white */
 
-    --popover: 224 12% 12%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 0%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 0 84% 53%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 56 100% 51%; /* #fee101 */
+    --primary-foreground: 0 0% 0%; /* black */
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 0 0% 16%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 0 0% 16%;
+    --muted-foreground: 0 0% 70%;
 
-    --accent: 45 93% 50%;
-    --accent-foreground: 220 13% 8%;
+    --accent: 56 100% 51%; /* #fee101 */
+    --accent-foreground: 0 0% 0%; /* black */
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 0 84% 53%;
+    --border: 0 0% 20%;
+    --input: 0 0% 0%;
+    --ring: 56 100% 51%;
 
     --radius: 0.75rem;
   }
@@ -55,29 +54,29 @@
   }
 }
 
-/* Cinema-specific utilities */
-.gsc-red {
-  color: var(--gsc-red);
+/* Cinema-specific utilities with new colors */
+.primary-yellow {
+  color: var(--primary-yellow);
 }
 
-.bg-gsc-red {
-  background-color: var(--gsc-red);
+.bg-primary-yellow {
+  background-color: var(--primary-yellow);
 }
 
-.gsc-gold {
-  color: var(--gsc-gold);
+.bg-background-dark {
+  background-color: var(--background-dark);
 }
 
-.bg-gsc-gold {
-  background-color: var(--gsc-gold);
+.bg-card-black {
+  background-color: var(--card-black);
 }
 
 .cinema-gradient {
-  background: linear-gradient(135deg, var(--gsc-red) 0%, #B71C1C 50%, var(--gsc-red) 100%);
+  background: linear-gradient(135deg, var(--primary-yellow) 0%, #e6cb01 50%, var(--primary-yellow) 100%);
 }
 
 .gold-gradient {
-  background: linear-gradient(135deg, var(--gsc-gold) 0%, #FFA000 50%, var(--gsc-gold) 100%);
+  background: linear-gradient(135deg, var(--primary-yellow) 0%, #e6cb01 50%, var(--primary-yellow) 100%);
 }
 
 /* Animations */
@@ -101,7 +100,7 @@
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.1),
+    rgba(254, 225, 1, 0.2),
     transparent
   );
   animation: shimmer 2s infinite;

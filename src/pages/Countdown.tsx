@@ -2,61 +2,58 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Clock, Film, Calendar } from "lucide-react";
-import { Link } from "react-router-dom";
-
-interface MovieSession {
-  id: string;
-  movieTitle: string;
-  hallNumber: string;
-  scheduledTime: Date;
-  actualStartTime?: Date;
-  adBufferMinutes: number;
-  status: string;
-}
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Clock, Film, Calendar, LogOut } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { getUserTickets, isUserLoggedIn, getCurrentUser, UserTicket } from "@/utils/userTickets";
+import { useToast } from "@/hooks/use-toast";
 
 const Countdown = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [movieSessions] = useState<MovieSession[]>([
-    {
-      id: "1",
-      movieTitle: "Spider-Man: No Way Home",
-      hallNumber: "Hall 1",
-      scheduledTime: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes from now
-      adBufferMinutes: 12,
-      status: "scheduled"
-    },
-    {
-      id: "2", 
-      movieTitle: "Avatar: The Way of Water",
-      hallNumber: "Hall 2",
-      scheduledTime: new Date(Date.now() + 45 * 60 * 1000), // 45 minutes from now
-      adBufferMinutes: 15,
-      status: "scheduled"
-    },
-    {
-      id: "3",
-      movieTitle: "Top Gun: Maverick",
-      hallNumber: "Hall 3",
-      scheduledTime: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now
-      adBufferMinutes: 10,
-      status: "scheduled"
-    }
-  ]);
+  const [userTickets, setUserTickets] = useState<UserTicket[]>([]);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
+    // Check if user is logged in
+    if (!isUserLoggedIn()) {
+      toast({
+        title: "Access Denied",
+        description: "Please login to view your movie countdowns.",
+        variant: "destructive",
+      });
+      navigate("/login");
+      return;
+    }
+
+    // Get current user and their tickets
+    const user = getCurrentUser();
+    if (user) {
+      const tickets = getUserTickets(user.email);
+      setUserTickets(tickets);
+    }
+
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [navigate, toast]);
 
-  const getActualStartTime = (session: MovieSession) => {
-    return new Date(session.scheduledTime.getTime() + session.adBufferMinutes * 60 * 1000);
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out.",
+    });
+    navigate("/");
   };
 
-  const getTimeUntilStart = (session: MovieSession) => {
-    const actualStart = getActualStartTime(session);
+  const getActualStartTime = (ticket: UserTicket) => {
+    return new Date(ticket.scheduledTime.getTime() + ticket.adBufferMinutes * 60 * 1000);
+  };
+
+  const getTimeUntilStart = (ticket: UserTicket) => {
+    const actualStart = getActualStartTime(ticket);
     const diffMs = actualStart.getTime() - currentTime.getTime();
     
     if (diffMs <= 0) {
@@ -74,41 +71,59 @@ const Countdown = () => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  const getStatusColor = (session: MovieSession) => {
-    const timeUntil = getTimeUntilStart(session);
+  const getStatusColor = (ticket: UserTicket) => {
+    const timeUntil = getTimeUntilStart(ticket);
     if (timeUntil.isStarted) return "bg-green-500";
     if (timeUntil.hours === 0 && timeUntil.minutes < 5) return "bg-red-500";
     if (timeUntil.hours === 0 && timeUntil.minutes < 15) return "bg-yellow-500";
     return "bg-blue-500";
   };
 
-  const getStatusText = (session: MovieSession) => {
-    const timeUntil = getTimeUntilStart(session);
+  const getStatusText = (ticket: UserTicket) => {
+    const timeUntil = getTimeUntilStart(ticket);
     if (timeUntil.isStarted) return "Movie Started";
     if (timeUntil.hours === 0 && timeUntil.minutes < 5) return "Starting Soon!";
     if (timeUntil.hours === 0 && timeUntil.minutes < 15) return "Ads Playing";
     return "Scheduled";
   };
 
+  const currentUser = getCurrentUser();
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-card">
+    <div className="min-h-screen bg-background-dark">
       {/* Header */}
-      <header className="border-b border-border/40 bg-card/50 backdrop-blur-sm sticky top-0 z-40">
+      <header className="border-b border-primary-yellow/40 bg-card-black/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link to="/" className="flex items-center text-muted-foreground hover:text-foreground">
+              <Link to="/" className="flex items-center text-white/70 hover:text-primary-yellow">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Home
               </Link>
               <div>
-                <h1 className="text-xl font-bold">Live Movie Countdown</h1>
-                <p className="text-sm text-muted-foreground">Real-time movie start times</p>
+                <h1 className="text-xl font-bold text-white">My Movie Countdowns</h1>
+                <p className="text-sm text-white/70">Real-time countdown for your booked movies</p>
               </div>
             </div>
-            <div className="text-right">
-              <div className="text-lg font-mono">{formatTime(currentTime)}</div>
-              <div className="text-xs text-muted-foreground">Current Time</div>
+            <div className="flex items-center space-x-4">
+              <div className="text-right">
+                <div className="text-lg font-mono text-primary-yellow">{formatTime(currentTime)}</div>
+                <div className="text-xs text-white/60">Current Time</div>
+              </div>
+              {currentUser && (
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-white">Welcome, {currentUser.name}</span>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleLogout}
+                    className="border-primary-yellow/30 text-primary-yellow hover:bg-primary-yellow hover:text-black"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -117,23 +132,23 @@ const Countdown = () => {
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-12 text-center">
         <div className="max-w-3xl mx-auto">
-          <div className="w-16 h-16 gold-gradient rounded-full mx-auto flex items-center justify-center mb-6">
+          <div className="w-16 h-16 bg-primary-yellow rounded-full mx-auto flex items-center justify-center mb-6">
             <Clock className="h-8 w-8 text-black" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Never Miss a Movie Start
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">
+            Never Miss Your Movie Start
           </h1>
-          <p className="text-xl text-muted-foreground mb-8">
-            Know exactly when your movie begins with our real-time countdown that accounts for trailers and advertisements
+          <p className="text-xl text-white/80 mb-8">
+            Know exactly when your booked movies begin with our real-time countdown that accounts for trailers and advertisements
           </p>
-          <div className="flex items-center justify-center space-x-6 text-sm text-muted-foreground">
+          <div className="flex items-center justify-center space-x-6 text-sm text-white/70">
             <div className="flex items-center">
               <Calendar className="h-4 w-4 mr-2" />
               Live Updates
             </div>
             <div className="flex items-center">
               <Film className="h-4 w-4 mr-2" />
-              GSC Malaysia
+              Your Bookings Only
             </div>
             <div className="flex items-center">
               <Clock className="h-4 w-4 mr-2" />
@@ -146,85 +161,105 @@ const Countdown = () => {
       {/* Movie Sessions */}
       <section className="container mx-auto px-4 pb-12">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold mb-6 text-center">Today's Sessions</h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {movieSessions.map((session) => {
-              const timeUntil = getTimeUntilStart(session);
-              const actualStart = getActualStartTime(session);
-              
-              return (
-                <Card key={session.id} className="relative overflow-hidden border-border/40 hover:shadow-lg transition-all duration-300">
-                  <div className={`absolute top-0 left-0 right-0 h-1 ${getStatusColor(session)}`} />
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <Badge variant="outline" className="text-xs">
-                        {session.hallNumber}
-                      </Badge>
-                      <Badge className={`text-xs ${getStatusColor(session)} text-white`}>
-                        {getStatusText(session)}
-                      </Badge>
-                    </div>
-                    <CardTitle className="text-lg leading-tight">{session.movieTitle}</CardTitle>
-                    <CardDescription className="space-y-1">
-                      <div className="flex justify-between text-sm">
-                        <span>Scheduled:</span>
-                        <span className="font-mono">{formatTime(session.scheduledTime)}</span>
+          <h2 className="text-2xl font-bold mb-6 text-center text-white">Your Booked Movies</h2>
+          
+          {userTickets.length === 0 ? (
+            <Card className="bg-card-black border-primary-yellow/20 text-center p-8">
+              <CardContent>
+                <Film className="h-12 w-12 text-primary-yellow mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2 text-white">No Movies Booked</h3>
+                <p className="text-white/70 mb-4">You don't have any upcoming movie bookings.</p>
+                <Link to="/hall-menu">
+                  <Button className="bg-primary-yellow text-black hover:bg-primary-yellow/90">
+                    Browse Movies
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
+              {userTickets.map((ticket) => {
+                const timeUntil = getTimeUntilStart(ticket);
+                const actualStart = getActualStartTime(ticket);
+                
+                return (
+                  <Card key={ticket.id} className="relative overflow-hidden bg-card-black border-primary-yellow/40 hover:shadow-lg transition-all duration-300">
+                    <div className={`absolute top-0 left-0 right-0 h-1 ${getStatusColor(ticket)}`} />
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <Badge variant="outline" className="text-xs border-primary-yellow/50 text-primary-yellow">
+                          {ticket.hallNumber}
+                        </Badge>
+                        <Badge className={`text-xs ${getStatusColor(ticket)} text-white`}>
+                          {getStatusText(ticket)}
+                        </Badge>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span>Movie Starts:</span>
-                        <span className="font-mono text-primary">{formatTime(actualStart)}</span>
-                      </div>
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>Ad Buffer:</span>
-                        <span>{session.adBufferMinutes} minutes</span>
-                      </div>
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {!timeUntil.isStarted ? (
-                      <div className="text-center">
-                        <div className="text-3xl font-mono font-bold mb-2 text-primary">
-                          {String(timeUntil.hours).padStart(2, '0')}:
-                          {String(timeUntil.minutes).padStart(2, '0')}:
-                          {String(timeUntil.seconds).padStart(2, '0')}
+                      <CardTitle className="text-lg leading-tight text-white">{ticket.movieTitle}</CardTitle>
+                      <CardDescription className="space-y-1">
+                        <div className="flex justify-between text-sm text-white/80">
+                          <span>Seat:</span>
+                          <span className="font-mono text-primary-yellow">{ticket.seatNumber}</span>
                         </div>
-                        <div className="text-sm text-muted-foreground">
-                          Time until movie starts
+                        <div className="flex justify-between text-sm text-white/80">
+                          <span>Scheduled:</span>
+                          <span className="font-mono">{formatTime(ticket.scheduledTime)}</span>
                         </div>
-                        
-                        {timeUntil.hours === 0 && timeUntil.minutes < 15 && (
-                          <div className="mt-3 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-md">
-                            <p className="text-xs text-yellow-400">
-                              {timeUntil.minutes < 5 ? "🎬 Movie starting soon!" : "📺 Trailers and ads playing"}
+                        <div className="flex justify-between text-sm text-white/80">
+                          <span>Movie Starts:</span>
+                          <span className="font-mono text-primary-yellow">{formatTime(actualStart)}</span>
+                        </div>
+                        <div className="flex justify-between text-xs text-white/60">
+                          <span>Ad Buffer:</span>
+                          <span>{ticket.adBufferMinutes} minutes</span>
+                        </div>
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {!timeUntil.isStarted ? (
+                        <div className="text-center">
+                          <div className="text-3xl font-mono font-bold mb-2 text-primary-yellow">
+                            {String(timeUntil.hours).padStart(2, '0')}:
+                            {String(timeUntil.minutes).padStart(2, '0')}:
+                            {String(timeUntil.seconds).padStart(2, '0')}
+                          </div>
+                          <div className="text-sm text-white/70">
+                            Time until movie starts
+                          </div>
+                          
+                          {timeUntil.hours === 0 && timeUntil.minutes < 15 && (
+                            <div className="mt-3 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-md">
+                              <p className="text-xs text-yellow-400">
+                                {timeUntil.minutes < 5 ? "🎬 Movie starting soon!" : "📺 Trailers and ads playing"}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-green-500 mb-2">
+                            🎬 MOVIE STARTED
+                          </div>
+                          <div className="text-sm text-white/70">
+                            Started at {formatTime(actualStart)}
+                          </div>
+                          <div className="mt-3 p-2 bg-green-500/10 border border-green-500/20 rounded-md">
+                            <p className="text-xs text-green-400">
+                              Enjoy the show!
                             </p>
                           </div>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-green-500 mb-2">
-                          🎬 MOVIE STARTED
                         </div>
-                        <div className="text-sm text-muted-foreground">
-                          Started at {formatTime(actualStart)}
-                        </div>
-                        <div className="mt-3 p-2 bg-green-500/10 border border-green-500/20 rounded-md">
-                          <p className="text-xs text-green-400">
-                            Enjoy the show!
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
 
           {/* Info Card */}
-          <Card className="mt-8 border-accent/20 bg-accent/5">
+          <Card className="mt-8 border-primary-yellow/20 bg-primary-yellow/5">
             <CardHeader>
-              <CardTitle className="flex items-center text-accent">
+              <CardTitle className="flex items-center text-primary-yellow">
                 <Clock className="h-5 w-5 mr-2" />
                 How It Works
               </CardTitle>
@@ -233,22 +268,22 @@ const Countdown = () => {
               <div className="flex items-start space-x-3">
                 <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold mt-0.5">1</div>
                 <div>
-                  <div className="font-medium">Scheduled Time</div>
-                  <div className="text-muted-foreground">The time listed on your ticket and GSC website</div>
+                  <div className="font-medium text-white">Scheduled Time</div>
+                  <div className="text-white/70">The time listed on your ticket and GSC website</div>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
                 <div className="w-6 h-6 rounded-full bg-yellow-500 flex items-center justify-center text-white text-xs font-bold mt-0.5">2</div>
                 <div>
-                  <div className="font-medium">Trailers & Ads</div>
-                  <div className="text-muted-foreground">GSC typically shows 10-15 minutes of trailers and advertisements</div>
+                  <div className="font-medium text-white">Trailers & Ads</div>
+                  <div className="text-white/70">GSC typically shows 10-15 minutes of trailers and advertisements</div>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
                 <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold mt-0.5">3</div>
                 <div>
-                  <div className="font-medium">Movie Begins</div>
-                  <div className="text-muted-foreground">The actual movie starts after the ad buffer period</div>
+                  <div className="font-medium text-white">Movie Begins</div>
+                  <div className="text-white/70">The actual movie starts after the ad buffer period</div>
                 </div>
               </div>
             </CardContent>

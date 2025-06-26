@@ -61,28 +61,28 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-card flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background-dark flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Back to Home */}
-        <Link to="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
+        <Link to="/" className="inline-flex items-center text-sm text-white/70 hover:text-primary-yellow mb-6 transition-colors">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Home
         </Link>
 
-        <Card className="border-border/40 shadow-2xl">
+        <Card className="border-primary-yellow/40 shadow-2xl bg-card-black">
           <CardHeader className="text-center space-y-2">
-            <div className="w-12 h-12 cinema-gradient rounded-lg mx-auto flex items-center justify-center mb-4">
-              <span className="text-white font-bold">GSC</span>
+            <div className="w-12 h-12 bg-primary-yellow rounded-lg mx-auto flex items-center justify-center mb-4">
+              <span className="text-black font-bold">GSC</span>
             </div>
-            <CardTitle className="text-2xl">Welcome Back</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-2xl text-white">Welcome Back</CardTitle>
+            <CardDescription className="text-white/80">
               Sign in to access GSC Cinema Live features
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-white">Email</Label>
                 <Input
                   id="email"
                   type="email"
@@ -90,10 +90,11 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  className="bg-background-dark border-primary-yellow/30 text-white placeholder:text-white/50"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password" className="text-white">Password</Label>
                 <Input
                   id="password"
                   type="password"
@@ -101,26 +102,27 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  className="bg-background-dark border-primary-yellow/30 text-white placeholder:text-white/50"
                 />
               </div>
-              <Button type="submit" className="w-full cinema-gradient hover:opacity-90" disabled={isLoading}>
+              <Button type="submit" className="w-full bg-primary-yellow text-black hover:bg-primary-yellow/90" disabled={isLoading}>
                 {isLoading ? "Signing In..." : "Sign In"}
               </Button>
             </form>
 
-            <div className="mt-6 pt-6 border-t border-border/40">
-              <p className="text-sm text-muted-foreground mb-4 text-center">Demo Accounts</p>
+            <div className="mt-6 pt-6 border-t border-primary-yellow/20">
+              <p className="text-sm text-white/70 mb-4 text-center">Demo Accounts</p>
               <div className="space-y-2">
                 {demoAccounts.map((account) => (
                   <Button
                     key={account.email}
                     variant="outline"
-                    className="w-full justify-start text-left h-auto p-3"
+                    className="w-full justify-start text-left h-auto p-3 border-primary-yellow/30 text-white hover:bg-primary-yellow hover:text-black"
                     onClick={() => quickLogin(account)}
                   >
                     <div>
                       <div className="font-medium capitalize">{account.role}</div>
-                      <div className="text-xs text-muted-foreground">{account.email}</div>
+                      <div className="text-xs text-white/60">{account.email}</div>
                     </div>
                   </Button>
                 ))}
@@ -129,7 +131,7 @@ const Login = () => {
           </CardContent>
         </Card>
 
-        <p className="text-center text-xs text-muted-foreground mt-6">
+        <p className="text-center text-xs text-white/50 mt-6">
           This is a demo application for assignment purposes
         </p>
       </div>
