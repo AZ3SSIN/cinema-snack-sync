@@ -1,7 +1,12 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Clock, MapPin, ShoppingBag } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
@@ -40,27 +45,44 @@ const Orders = () => {
 
     // Load orders from localStorage
     const allOrders = JSON.parse(localStorage.getItem("orders") || "[]");
-    const userOrders = allOrders.filter((order: Order) => order.userId === parsedUser.email);
-    setOrders(userOrders.sort((a: Order, b: Order) => new Date(b.orderTime).getTime() - new Date(a.orderTime).getTime()));
+    const userOrders = allOrders.filter(
+      (order: Order) => order.userId === parsedUser.email
+    );
+    setOrders(
+      userOrders.sort(
+        (a: Order, b: Order) =>
+          new Date(b.orderTime).getTime() - new Date(a.orderTime).getTime()
+      )
+    );
   }, [navigate]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "pending": return "status-pending";
-      case "preparing": return "status-preparing";
-      case "out_for_delivery": return "status-out_for_delivery";
-      case "delivered": return "status-delivered";
-      default: return "status-pending";
+      case "pending":
+        return "status-pending";
+      case "preparing":
+        return "status-preparing";
+      case "out_for_delivery":
+        return "status-out_for_delivery";
+      case "delivered":
+        return "status-delivered";
+      default:
+        return "status-pending";
     }
   };
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case "pending": return "Order Pending";
-      case "preparing": return "Being Prepared";
-      case "out_for_delivery": return "Out for Delivery";
-      case "delivered": return "Delivered";
-      default: return "Unknown";
+      case "pending":
+        return "Order Pending";
+      case "preparing":
+        return "Being Prepared";
+      case "out_for_delivery":
+        return "Out for Delivery";
+      case "delivered":
+        return "Delivered";
+      default:
+        return "Unknown";
     }
   };
 
@@ -82,8 +104,13 @@ const Orders = () => {
         return "Delivered";
     }
 
-    const estimatedTime = new Date(orderDate.getTime() + estimatedMinutes * 60000);
-    return estimatedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const estimatedTime = new Date(
+      orderDate.getTime() + estimatedMinutes * 60000
+    );
+    return estimatedTime.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   if (!user) {
@@ -97,13 +124,18 @@ const Orders = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link to="/hall-menu" className="flex items-center text-muted-foreground hover:text-foreground">
+              <Link
+                to="/hall-menu"
+                className="flex items-center text-muted-foreground hover:text-foreground"
+              >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Menu
+                Back
               </Link>
               <div>
                 <h1 className="text-xl font-bold">My Orders</h1>
-                <p className="text-sm text-muted-foreground">Track your snack deliveries</p>
+                <p className="text-sm text-muted-foreground">
+                  Track your snack deliveries
+                </p>
               </div>
             </div>
             <Button asChild>
@@ -120,7 +152,8 @@ const Orders = () => {
               <ShoppingBag className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
               <h3 className="text-lg font-semibold mb-2">No Orders Yet</h3>
               <p className="text-muted-foreground mb-4">
-                You haven't placed any orders yet. Start by browsing our delicious snack menu!
+                You haven't placed any orders yet. Start by browsing our
+                delicious snack menu!
               </p>
               <Button asChild>
                 <Link to="/hall-menu">Browse Menu</Link>
@@ -136,7 +169,11 @@ const Orders = () => {
                     <div>
                       <CardTitle className="flex items-center space-x-2">
                         <span>Order #{order.id.slice(-6)}</span>
-                        <Badge className={`status-badge ${getStatusColor(order.status)}`}>
+                        <Badge
+                          className={`status-badge ${getStatusColor(
+                            order.status
+                          )}`}
+                        >
                           {getStatusText(order.status)}
                         </Badge>
                       </CardTitle>
@@ -147,7 +184,10 @@ const Orders = () => {
                         </span>
                         <span className="flex items-center">
                           <Clock className="h-4 w-4 mr-1" />
-                          {new Date(order.orderTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          {new Date(order.orderTime).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
                         </span>
                       </CardDescription>
                     </div>
@@ -157,7 +197,8 @@ const Orders = () => {
                       </div>
                       {order.status !== "delivered" && (
                         <div className="text-sm text-muted-foreground">
-                          ETA: {getEstimatedDelivery(order.orderTime, order.status)}
+                          ETA:{" "}
+                          {getEstimatedDelivery(order.orderTime, order.status)}
                         </div>
                       )}
                     </div>
@@ -168,12 +209,19 @@ const Orders = () => {
                     <h4 className="font-medium">Order Items:</h4>
                     <div className="grid gap-2">
                       {order.items.map((item, index) => (
-                        <div key={index} className="flex justify-between items-center py-2 px-3 bg-muted/30 rounded-md">
+                        <div
+                          key={index}
+                          className="flex justify-between items-center py-2 px-3 bg-muted/30 rounded-md"
+                        >
                           <div>
                             <span className="font-medium">{item.name}</span>
-                            <span className="text-muted-foreground ml-2">x{item.quantity}</span>
+                            <span className="text-muted-foreground ml-2">
+                              x{item.quantity}
+                            </span>
                           </div>
-                          <span className="font-medium">RM{(item.price * item.quantity).toFixed(2)}</span>
+                          <span className="font-medium">
+                            RM{(item.price * item.quantity).toFixed(2)}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -181,27 +229,48 @@ const Orders = () => {
                     {/* Progress Indicator */}
                     <div className="mt-6">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium">Order Progress</span>
+                        <span className="text-sm font-medium">
+                          Order Progress
+                        </span>
                         <span className="text-sm text-muted-foreground">
-                          {order.status === "delivered" ? "Completed" : "In Progress"}
+                          {order.status === "delivered"
+                            ? "Completed"
+                            : "In Progress"}
                         </span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        {["pending", "preparing", "out_for_delivery", "delivered"].map((status, index) => {
-                          const isActive = ["pending", "preparing", "out_for_delivery", "delivered"].indexOf(order.status) >= index;
+                        {[
+                          "pending",
+                          "preparing",
+                          "out_for_delivery",
+                          "delivered",
+                        ].map((status, index) => {
+                          const isActive =
+                            [
+                              "pending",
+                              "preparing",
+                              "out_for_delivery",
+                              "delivered",
+                            ].indexOf(order.status) >= index;
                           const isCurrent = order.status === status;
-                          
+
                           return (
                             <div key={status} className="flex items-center">
-                              <div className={`w-3 h-3 rounded-full border-2 ${
-                                isActive 
-                                  ? isCurrent 
-                                    ? "bg-primary border-primary" 
-                                    : "bg-primary/50 border-primary"
-                                  : "bg-muted border-muted-foreground/30"
-                              }`} />
+                              <div
+                                className={`w-3 h-3 rounded-full border-2 ${
+                                  isActive
+                                    ? isCurrent
+                                      ? "bg-primary border-primary"
+                                      : "bg-primary/50 border-primary"
+                                    : "bg-muted border-muted-foreground/30"
+                                }`}
+                              />
                               {index < 3 && (
-                                <div className={`h-0.5 w-8 ${isActive ? "bg-primary" : "bg-muted"}`} />
+                                <div
+                                  className={`h-0.5 w-8 ${
+                                    isActive ? "bg-primary" : "bg-muted"
+                                  }`}
+                                />
                               )}
                             </div>
                           );
@@ -212,7 +281,11 @@ const Orders = () => {
                     {order.status === "delivered" && order.deliveryTime && (
                       <div className="mt-4 p-3 bg-green-500/10 border border-green-500/20 rounded-md">
                         <p className="text-sm text-green-400">
-                          ✓ Delivered at {new Date(order.deliveryTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          ✓ Delivered at{" "}
+                          {new Date(order.deliveryTime).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
                         </p>
                       </div>
                     )}

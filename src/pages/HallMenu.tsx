@@ -1,11 +1,17 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, ShoppingCart, Plus, Minus, MapPin } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import Navigation from "@/components/Navigation";
 
 interface CartItem {
   id: string;
@@ -35,25 +41,103 @@ const HallMenu = () => {
   // Sample menu items
   const menuItems: MenuItem[] = [
     // Popcorn
-    { id: "pop-s", name: "Small Popcorn", description: "Perfect single serving", price: 8.90, category: "Popcorn" },
-    { id: "pop-m", name: "Medium Popcorn", description: "Great for sharing", price: 12.90, category: "Popcorn" },
-    { id: "pop-l", name: "Large Popcorn", description: "Family size portion", price: 16.90, category: "Popcorn" },
-    { id: "pop-c", name: "Caramel Popcorn", description: "Sweet caramel coating", price: 14.90, category: "Popcorn" },
-    
+    {
+      id: "pop-s",
+      name: "Small Popcorn",
+      description: "Perfect single serving",
+      price: 8.9,
+      category: "Popcorn",
+    },
+    {
+      id: "pop-m",
+      name: "Medium Popcorn",
+      description: "Great for sharing",
+      price: 12.9,
+      category: "Popcorn",
+    },
+    {
+      id: "pop-l",
+      name: "Large Popcorn",
+      description: "Family size portion",
+      price: 16.9,
+      category: "Popcorn",
+    },
+    {
+      id: "pop-c",
+      name: "Caramel Popcorn",
+      description: "Sweet caramel coating",
+      price: 14.9,
+      category: "Popcorn",
+    },
+
     // Beverages
-    { id: "coke", name: "Coca-Cola", description: "Classic refreshment", price: 6.90, category: "Beverages" },
-    { id: "sprite", name: "Sprite", description: "Lemon-lime soda", price: 6.90, category: "Beverages" },
-    { id: "coffee", name: "Hot Coffee", description: "Freshly brewed", price: 8.90, category: "Beverages" },
-    { id: "water", name: "Mineral Water", description: "500ml bottle", price: 4.90, category: "Beverages" },
-    
+    {
+      id: "coke",
+      name: "Coca-Cola",
+      description: "Classic refreshment",
+      price: 6.9,
+      category: "Beverages",
+    },
+    {
+      id: "sprite",
+      name: "Sprite",
+      description: "Lemon-lime soda",
+      price: 6.9,
+      category: "Beverages",
+    },
+    {
+      id: "coffee",
+      name: "Hot Coffee",
+      description: "Freshly brewed",
+      price: 8.9,
+      category: "Beverages",
+    },
+    {
+      id: "water",
+      name: "Mineral Water",
+      description: "500ml bottle",
+      price: 4.9,
+      category: "Beverages",
+    },
+
     // Snacks
-    { id: "nachos", name: "Nachos & Cheese", description: "Crispy tortilla chips", price: 11.90, category: "Snacks" },
-    { id: "hotdog", name: "Cinema Hot Dog", description: "Classic frankfurter", price: 9.90, category: "Snacks" },
-    { id: "candy", name: "Mixed Candy", description: "Assorted sweets", price: 7.90, category: "Snacks" },
-    
+    {
+      id: "nachos",
+      name: "Nachos & Cheese",
+      description: "Crispy tortilla chips",
+      price: 11.9,
+      category: "Snacks",
+    },
+    {
+      id: "hotdog",
+      name: "Cinema Hot Dog",
+      description: "Classic frankfurter",
+      price: 9.9,
+      category: "Snacks",
+    },
+    {
+      id: "candy",
+      name: "Mixed Candy",
+      description: "Assorted sweets",
+      price: 7.9,
+      category: "Snacks",
+    },
+
     // Combos
-    { id: "combo1", name: "Movie Night Combo", description: "Medium popcorn + 2 drinks", price: 22.90, category: "Combos" },
-    { id: "combo2", name: "Sweet Tooth Combo", description: "Caramel popcorn + candy", price: 19.90, category: "Combos" },
+    {
+      id: "combo1",
+      name: "Movie Night Combo",
+      description: "Medium popcorn + 2 drinks",
+      price: 22.9,
+      category: "Combos",
+    },
+    {
+      id: "combo2",
+      name: "Sweet Tooth Combo",
+      description: "Caramel popcorn + candy",
+      price: 19.9,
+      category: "Combos",
+    },
   ];
 
   const categories = ["Popcorn", "Beverages", "Snacks", "Combos"];
@@ -69,10 +153,10 @@ const HallMenu = () => {
   }, [navigate]);
 
   const addToCart = (item: MenuItem) => {
-    setCart(prev => {
-      const existingItem = prev.find(cartItem => cartItem.id === item.id);
+    setCart((prev) => {
+      const existingItem = prev.find((cartItem) => cartItem.id === item.id);
       if (existingItem) {
-        return prev.map(cartItem =>
+        return prev.map((cartItem) =>
           cartItem.id === item.id
             ? { ...cartItem, quantity: cartItem.quantity + 1 }
             : cartItem
@@ -80,7 +164,7 @@ const HallMenu = () => {
       }
       return [...prev, { ...item, quantity: 1 }];
     });
-    
+
     toast({
       title: "Added to Cart",
       description: `${item.name} added to your order`,
@@ -88,21 +172,21 @@ const HallMenu = () => {
   };
 
   const removeFromCart = (itemId: string) => {
-    setCart(prev => {
-      const existingItem = prev.find(cartItem => cartItem.id === itemId);
+    setCart((prev) => {
+      const existingItem = prev.find((cartItem) => cartItem.id === itemId);
       if (existingItem && existingItem.quantity > 1) {
-        return prev.map(cartItem =>
+        return prev.map((cartItem) =>
           cartItem.id === itemId
             ? { ...cartItem, quantity: cartItem.quantity - 1 }
             : cartItem
         );
       }
-      return prev.filter(cartItem => cartItem.id !== itemId);
+      return prev.filter((cartItem) => cartItem.id !== itemId);
     });
   };
 
   const getCartTotal = () => {
-    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
   const getCartItemCount = () => {
@@ -138,7 +222,7 @@ const HallMenu = () => {
       totalAmount: getCartTotal(),
       status: "pending",
       orderTime: new Date().toISOString(),
-      specialInstructions: ""
+      specialInstructions: "",
     };
 
     // Store order in localStorage for demo purposes
@@ -163,37 +247,27 @@ const HallMenu = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background-dark">
+      <Navigation />
       {/* Header */}
-      <header className="border-b border-border/40 bg-card/50 backdrop-blur-sm sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link to="/" className="flex items-center text-muted-foreground hover:text-foreground">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
-              </Link>
-              <div>
-                <h1 className="text-xl font-bold">Cinema Snack Menu</h1>
-                <p className="text-sm text-muted-foreground">Welcome, {user.name}</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/orders">My Orders</Link>
-              </Button>
-              <div className="relative">
-                <ShoppingCart className="h-5 w-5" />
-                {getCartItemCount() > 0 && (
-                  <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-primary">
-                    {getCartItemCount()}
-                  </Badge>
-                )}
-              </div>
+
+      <div className="container mx-auto px-4 py-1">
+        <div className="flex items-left justify-between">
+          <div className="flex items-center space-x-4">
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/orders">My Orders</Link>
+            </Button>
+            <div className="relative">
+              <ShoppingCart className="h-5 w-5" />
+              {getCartItemCount() > 0 && (
+                <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-primary">
+                  {getCartItemCount()}
+                </Badge>
+              )}
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
       <div className="container mx-auto px-4 py-6">
         <div className="grid lg:grid-cols-4 gap-6">
@@ -205,19 +279,23 @@ const HallMenu = () => {
                   <MapPin className="h-5 w-5 mr-2 text-primary" />
                   Your Location
                 </CardTitle>
-                <CardDescription>Select your current hall and seat</CardDescription>
+                <CardDescription>
+                  Select your current hall and seat
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
                   <label className="text-sm font-medium mb-2 block">Hall</label>
-                  <select 
+                  <select
                     className="w-full p-2 rounded-md border border-border bg-background"
                     value={selectedHall}
                     onChange={(e) => setSelectedHall(e.target.value)}
                   >
                     <option value="">Select Hall</option>
-                    {halls.map(hall => (
-                      <option key={hall} value={hall}>{hall}</option>
+                    {halls.map((hall) => (
+                      <option key={hall} value={hall}>
+                        {hall}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -228,19 +306,28 @@ const HallMenu = () => {
                     placeholder="e.g., J12"
                     className="w-full p-2 rounded-md border border-border bg-background"
                     value={selectedSeat}
-                    onChange={(e) => setSelectedSeat(e.target.value.toUpperCase())}
+                    onChange={(e) =>
+                      setSelectedSeat(e.target.value.toUpperCase())
+                    }
                   />
                 </div>
-                
+
                 {/* Cart Summary */}
                 {cart.length > 0 && (
                   <div className="pt-4 border-t border-border/40">
                     <h3 className="font-medium mb-3">Cart Summary</h3>
                     <div className="space-y-2 max-h-32 overflow-y-auto">
-                      {cart.map(item => (
-                        <div key={item.id} className="flex justify-between items-center text-sm">
-                          <span>{item.name} x{item.quantity}</span>
-                          <span>RM{(item.price * item.quantity).toFixed(2)}</span>
+                      {cart.map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex justify-between items-center text-sm"
+                        >
+                          <span>
+                            {item.name} x{item.quantity}
+                          </span>
+                          <span>
+                            RM{(item.price * item.quantity).toFixed(2)}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -250,7 +337,7 @@ const HallMenu = () => {
                         <span>RM{getCartTotal().toFixed(2)}</span>
                       </div>
                     </div>
-                    <Button 
+                    <Button
                       className="w-full mt-4 cinema-gradient hover:opacity-90"
                       onClick={placeOrder}
                     >
@@ -264,30 +351,45 @@ const HallMenu = () => {
 
           {/* Menu Items */}
           <div className="lg:col-span-3">
-            {categories.map(category => (
+            {categories.map((category) => (
               <div key={category} className="mb-8">
                 <h2 className="text-2xl font-bold mb-4 flex items-center">
                   {category}
                   <Badge variant="secondary" className="ml-2">
-                    {menuItems.filter(item => item.category === category).length} items
+                    {
+                      menuItems.filter((item) => item.category === category)
+                        .length
+                    }{" "}
+                    items
                   </Badge>
                 </h2>
                 <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
                   {menuItems
-                    .filter(item => item.category === category)
-                    .map(item => {
-                      const cartItem = cart.find(cartItem => cartItem.id === item.id);
+                    .filter((item) => item.category === category)
+                    .map((item) => {
+                      const cartItem = cart.find(
+                        (cartItem) => cartItem.id === item.id
+                      );
                       const quantity = cartItem?.quantity || 0;
-                      
+
                       return (
-                        <Card key={item.id} className="hover:shadow-lg transition-all duration-300 border-border/40 hover:border-primary/40">
+                        <Card
+                          key={item.id}
+                          className="hover:shadow-lg transition-all duration-300 border-border/40 hover:border-primary/40"
+                        >
                           <CardHeader className="pb-3">
                             <div className="flex justify-between items-start">
                               <div>
-                                <CardTitle className="text-lg">{item.name}</CardTitle>
-                                <CardDescription className="text-sm">{item.description}</CardDescription>
+                                <CardTitle className="text-lg">
+                                  {item.name}
+                                </CardTitle>
+                                <CardDescription className="text-sm">
+                                  {item.description}
+                                </CardDescription>
                               </div>
-                              <span className="text-lg font-bold text-primary">RM{item.price.toFixed(2)}</span>
+                              <span className="text-lg font-bold text-primary">
+                                RM{item.price.toFixed(2)}
+                              </span>
                             </div>
                           </CardHeader>
                           <CardContent>
@@ -302,7 +404,9 @@ const HallMenu = () => {
                                 >
                                   <Minus className="h-4 w-4" />
                                 </Button>
-                                <span className="w-8 text-center font-medium">{quantity}</span>
+                                <span className="w-8 text-center font-medium">
+                                  {quantity}
+                                </span>
                                 <Button
                                   variant="outline"
                                   size="sm"

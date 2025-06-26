@@ -1,11 +1,29 @@
-
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, ChevronRight, Clock, MapPin, Film, CreditCard, Calendar } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  MapPin,
+  Film,
+  CreditCard,
+  Calendar,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { isUserLoggedIn, getCurrentUser, saveDynamicBooking, UserTicket } from "@/utils/userTickets";
+import {
+  isUserLoggedIn,
+  getCurrentUser,
+  saveDynamicBooking,
+  UserTicket,
+} from "@/utils/userTickets";
 import { useToast } from "@/hooks/use-toast";
 import Navigation from "@/components/Navigation";
 
@@ -48,13 +66,13 @@ const HallBooking = () => {
     {
       id: "gsc-pavilion",
       name: "GSC Pavilion KL",
-      location: "Pavilion Kuala Lumpur"
+      location: "Pavilion Kuala Lumpur",
     },
     {
       id: "gsc-midvalley",
       name: "GSC Mid Valley",
-      location: "Mid Valley Megamall"
-    }
+      location: "Mid Valley Megamall",
+    },
   ];
 
   const movies: Movie[] = [
@@ -63,50 +81,50 @@ const HallBooking = () => {
       title: "Spider-Man: No Way Home",
       poster: "/placeholder.svg",
       duration: "148 min",
-      genre: "Action, Adventure"
+      genre: "Action, Adventure",
     },
     {
       id: "avatar",
       title: "Avatar: The Way of Water",
       poster: "/placeholder.svg",
       duration: "192 min",
-      genre: "Action, Adventure, Drama"
+      genre: "Action, Adventure, Drama",
     },
     {
       id: "topgun",
       title: "Top Gun: Maverick",
       poster: "/placeholder.svg",
       duration: "130 min",
-      genre: "Action, Drama"
+      genre: "Action, Drama",
     },
     {
       id: "johnwick",
       title: "John Wick: Chapter 4",
       poster: "/placeholder.svg",
       duration: "169 min",
-      genre: "Action, Crime, Thriller"
+      genre: "Action, Crime, Thriller",
     },
     {
       id: "batman",
       title: "The Batman",
       poster: "/placeholder.svg",
       duration: "176 min",
-      genre: "Action, Crime, Drama"
-    }
+      genre: "Action, Crime, Drama",
+    },
   ];
 
   const generateShowtimes = () => {
     const showtimes = [];
     const now = new Date();
-    
+
     // Start 5 minutes from now
     let startTime = new Date(now.getTime() + 5 * 60 * 1000);
-    
+
     // Generate 5 showtimes, each 45 minutes apart
     for (let i = 0; i < 5; i++) {
       showtimes.push(new Date(startTime.getTime() + i * 45 * 60 * 1000));
     }
-    
+
     return showtimes;
   };
 
@@ -117,13 +135,15 @@ const HallBooking = () => {
     setSelectedShowtime(null);
   };
 
-  const handleMovieNavigation = (direction: 'prev' | 'next') => {
-    if (direction === 'prev') {
-      const newIndex = currentMovieIndex > 0 ? currentMovieIndex - 1 : movies.length - 1;
+  const handleMovieNavigation = (direction: "prev" | "next") => {
+    if (direction === "prev") {
+      const newIndex =
+        currentMovieIndex > 0 ? currentMovieIndex - 1 : movies.length - 1;
       setCurrentMovieIndex(newIndex);
       setSelectedMovie(movies[newIndex]);
     } else {
-      const newIndex = currentMovieIndex < movies.length - 1 ? currentMovieIndex + 1 : 0;
+      const newIndex =
+        currentMovieIndex < movies.length - 1 ? currentMovieIndex + 1 : 0;
       setCurrentMovieIndex(newIndex);
       setSelectedMovie(movies[newIndex]);
     }
@@ -132,12 +152,12 @@ const HallBooking = () => {
 
   const handlePayment = async () => {
     if (!selectedCinema || !selectedMovie || !selectedShowtime) return;
-    
+
     setIsProcessingPayment(true);
-    
+
     // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     const currentUser = getCurrentUser();
     if (currentUser) {
       const newBooking: UserTicket = {
@@ -145,28 +165,30 @@ const HallBooking = () => {
         movieTitle: selectedMovie.title,
         hallNumber: `Hall ${Math.floor(Math.random() * 5) + 1}`,
         scheduledTime: selectedShowtime,
-        seatNumber: `${String.fromCharCode(65 + Math.floor(Math.random() * 5))}${Math.floor(Math.random() * 20) + 1}`,
-        ticketPrice: 25.00,
+        seatNumber: `${String.fromCharCode(
+          65 + Math.floor(Math.random() * 5)
+        )}${Math.floor(Math.random() * 20) + 1}`,
+        ticketPrice: 25.0,
         bookingDate: new Date(),
         adBufferMinutes: Math.floor(Math.random() * 6) + 10, // 10-15 minutes
-        cinemaName: selectedCinema.name
+        cinemaName: selectedCinema.name,
       };
-      
+
       saveDynamicBooking(currentUser.email, newBooking);
-      
+
       toast({
         title: "Booking Successful!",
         description: `Your ticket for ${selectedMovie.title} has been booked.`,
       });
-      
+
       navigate("/countdown");
     }
-    
+
     setIsProcessingPayment(false);
   };
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
   const currentUser = getCurrentUser();
@@ -178,14 +200,16 @@ const HallBooking = () => {
   return (
     <div className="min-h-screen bg-background-dark">
       <Navigation />
-      
+
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-primary-yellow rounded-full mx-auto flex items-center justify-center mb-6">
             <Calendar className="h-8 w-8 text-black" />
           </div>
-          <h1 className="text-4xl font-bold mb-4 text-white">Book Your Movie</h1>
+          <h1 className="text-4xl font-bold mb-4 text-white">
+            Book Your Movie
+          </h1>
           <p className="text-xl text-white/80">
             Select your cinema, movie, and showtime for today
           </p>
@@ -194,11 +218,13 @@ const HallBooking = () => {
         {!selectedCinema ? (
           /* Cinema Selection */
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold mb-6 text-center text-white">Choose Your Cinema</h2>
+            <h2 className="text-2xl font-bold mb-6 text-center text-white">
+              Choose Your Cinema
+            </h2>
             <div className="grid md:grid-cols-2 gap-6">
               {cinemas.map((cinema) => (
-                <Card 
-                  key={cinema.id} 
+                <Card
+                  key={cinema.id}
                   className="cursor-pointer hover:shadow-lg transition-all duration-300 bg-card-black border-primary-yellow/40 hover:border-primary-yellow/60"
                   onClick={() => handleCinemaSelect(cinema)}
                 >
@@ -206,8 +232,12 @@ const HallBooking = () => {
                     <div className="flex items-center space-x-3">
                       <MapPin className="h-8 w-8 text-primary-yellow" />
                       <div>
-                        <CardTitle className="text-xl text-white">{cinema.name}</CardTitle>
-                        <CardDescription className="text-white/70">{cinema.location}</CardDescription>
+                        <CardTitle className="text-xl text-white">
+                          {cinema.name}
+                        </CardTitle>
+                        <CardDescription className="text-white/70">
+                          {cinema.location}
+                        </CardDescription>
                       </div>
                     </div>
                   </CardHeader>
@@ -229,9 +259,9 @@ const HallBooking = () => {
                 <MapPin className="h-4 w-4 mr-2" />
                 {selectedCinema.name}
               </Badge>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setSelectedCinema(null)}
                 className="ml-4 border-primary-yellow/30 text-primary-yellow hover:bg-primary-yellow hover:text-black"
               >
@@ -241,7 +271,9 @@ const HallBooking = () => {
 
             {/* Movie Selection */}
             <div className="mb-8">
-              <h3 className="text-2xl font-bold mb-6 text-center text-white">Select Movie</h3>
+              <h3 className="text-2xl font-bold mb-6 text-center text-white">
+                Select Movie
+              </h3>
               <div className="relative">
                 <Card className="bg-card-black border-primary-yellow/40">
                   <CardContent className="p-6">
@@ -249,22 +281,24 @@ const HallBooking = () => {
                       <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => handleMovieNavigation('prev')}
+                        onClick={() => handleMovieNavigation("prev")}
                         className="border-primary-yellow/30 text-primary-yellow hover:bg-primary-yellow hover:text-black"
                       >
                         <ChevronLeft className="h-4 w-4" />
                       </Button>
-                      
+
                       {selectedMovie && (
                         <div className="flex-1 mx-8 text-center">
                           <div className="flex items-center justify-center space-x-6">
-                            <img 
-                              src={selectedMovie.poster} 
+                            <img
+                              src={selectedMovie.poster}
                               alt={selectedMovie.title}
                               className="w-32 h-48 object-cover rounded-lg bg-primary-yellow/20"
                             />
                             <div className="text-left">
-                              <h4 className="text-2xl font-bold mb-2 text-white">{selectedMovie.title}</h4>
+                              <h4 className="text-2xl font-bold mb-2 text-white">
+                                {selectedMovie.title}
+                              </h4>
                               <div className="space-y-2 text-white/80">
                                 <div className="flex items-center">
                                   <Clock className="h-4 w-4 mr-2" />
@@ -279,11 +313,11 @@ const HallBooking = () => {
                           </div>
                         </div>
                       )}
-                      
+
                       <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => handleMovieNavigation('next')}
+                        onClick={() => handleMovieNavigation("next")}
                         className="border-primary-yellow/30 text-primary-yellow hover:bg-primary-yellow hover:text-black"
                       >
                         <ChevronRight className="h-4 w-4" />
@@ -296,16 +330,18 @@ const HallBooking = () => {
 
             {/* Showtime Selection */}
             <div className="mb-8">
-              <h3 className="text-2xl font-bold mb-6 text-center text-white">Select Showtime</h3>
+              <h3 className="text-2xl font-bold mb-6 text-center text-white">
+                Select Showtime
+              </h3>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 {generateShowtimes().map((showtime, index) => (
                   <Button
                     key={index}
-                    variant={selectedShowtime?.getTime() === showtime.getTime() ? "default" : "outline"}
+                    variant="ghost"
                     className={`p-4 h-auto ${
-                      selectedShowtime?.getTime() === showtime.getTime() 
-                        ? "bg-primary-yellow text-black" 
-                        : "border-primary-yellow/30 text-white hover:bg-primary-yellow hover:text-black"
+                      selectedShowtime?.getTime() === showtime.getTime()
+                        ? "!bg-yellow-400 text-black hover:bg-yellow-500"
+                        : "bg-white text-black hover:bg-yellow-400 hover:text-black"
                     }`}
                     onClick={() => setSelectedShowtime(showtime)}
                   >
@@ -323,7 +359,9 @@ const HallBooking = () => {
               <div className="max-w-md mx-auto">
                 <Card className="bg-card-black border-primary-yellow/40">
                   <CardHeader>
-                    <CardTitle className="text-center text-white">Booking Summary</CardTitle>
+                    <CardTitle className="text-center text-white">
+                      Booking Summary
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2 text-sm">
@@ -344,8 +382,8 @@ const HallBooking = () => {
                         <span>RM 25.00</span>
                       </div>
                     </div>
-                    <Button 
-                      className="w-full bg-primary-yellow text-black hover:bg-primary-yellow/90" 
+                    <Button
+                      className="w-full bg-primary-yellow text-black hover:bg-primary-yellow/90"
                       onClick={handlePayment}
                       disabled={isProcessingPayment}
                     >
