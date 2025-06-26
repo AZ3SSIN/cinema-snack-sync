@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, Clock, ShoppingCart, Users, Star, Film, MapPin, Calendar } from "lucide-react";
+import { ArrowRight, Clock, ShoppingCart, Users, Film, MapPin, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Index = () => {
@@ -42,6 +42,18 @@ const Index = () => {
                 <Calendar className="h-4 w-4 mr-2" />
                 Hall Booking
               </Button>
+              <Link to="/login?redirect=snacks">
+                <Button variant="ghost" className="text-white hover:text-black hover:bg-primary-yellow">
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Snack Delivery
+                </Button>
+              </Link>
+              <Link to="/login?redirect=countdown">
+                <Button variant="ghost" className="text-white hover:text-black hover:bg-primary-yellow">
+                  <Clock className="h-4 w-4 mr-2" />
+                  Movie Countdown
+                </Button>
+              </Link>
             </div>
 
             <div className="flex items-center space-x-4">
@@ -79,88 +91,6 @@ const Index = () => {
               Watch Demo
             </Button>
           </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="container mx-auto px-4 py-20">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4 text-white">Revolutionary Features</h2>
-          <p className="text-xl text-white/80 max-w-2xl mx-auto">
-            Two groundbreaking features designed to enhance your cinema experience
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-          {/* Feature 1: Snack Delivery */}
-          <Card className="relative overflow-hidden group hover:shadow-2xl transition-all duration-300 bg-card-black border-primary-yellow/20 hover:border-primary-yellow/40">
-            <div className="absolute inset-0 bg-primary-yellow/5 group-hover:bg-primary-yellow/10 transition-opacity duration-300" />
-            <CardHeader className="relative">
-              <div className="w-12 h-12 bg-primary-yellow rounded-lg flex items-center justify-center mb-4">
-                <ShoppingCart className="h-6 w-6 text-black" />
-              </div>
-              <CardTitle className="text-2xl text-white">In-Hall Snack Delivery</CardTitle>
-              <CardDescription className="text-base text-white/80">
-                Order snacks directly to your seat without missing any action
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="relative">
-              <div className="space-y-3 mb-6">
-                <div className="flex items-center text-sm text-white">
-                  <Star className="h-4 w-4 text-primary-yellow mr-2" />
-                  Real-time order tracking
-                </div>
-                <div className="flex items-center text-sm text-white">
-                  <Star className="h-4 w-4 text-primary-yellow mr-2" />
-                  Silent delivery to your seat
-                </div>
-                <div className="flex items-center text-sm text-white">
-                  <Star className="h-4 w-4 text-primary-yellow mr-2" />
-                  Full GSC menu available
-                </div>
-              </div>
-              <Link to="/login">
-                <Button className="w-full bg-primary-yellow text-black hover:bg-primary-yellow/90">
-                  Try Snack Delivery
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-
-          {/* Feature 2: Movie Countdown */}
-          <Card className="relative overflow-hidden group hover:shadow-2xl transition-all duration-300 bg-card-black border-primary-yellow/20 hover:border-primary-yellow/40">
-            <div className="absolute inset-0 bg-primary-yellow/5 group-hover:bg-primary-yellow/10 transition-opacity duration-300" />
-            <CardHeader className="relative">
-              <div className="w-12 h-12 bg-primary-yellow rounded-lg flex items-center justify-center mb-4">
-                <Clock className="h-6 w-6 text-black" />
-              </div>
-              <CardTitle className="text-2xl text-white">Live Movie Countdown</CardTitle>
-              <CardDescription className="text-base text-white/80">
-                Know exactly when your movie starts, accounting for trailers and ads
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="relative">
-              <div className="space-y-3 mb-6">
-                <div className="flex items-center text-sm text-white">
-                  <Star className="h-4 w-4 text-primary-yellow mr-2" />
-                  Real-time countdown display
-                </div>
-                <div className="flex items-center text-sm text-white">
-                  <Star className="h-4 w-4 text-primary-yellow mr-2" />
-                  Trailer buffer calculation
-                </div>
-                <div className="flex items-center text-sm text-white">
-                  <Star className="h-4 w-4 text-primary-yellow mr-2" />
-                  Perfect timing alerts
-                </div>
-              </div>
-              <Link to="/login">
-                <Button className="w-full bg-primary-yellow text-black hover:bg-primary-yellow/90">
-                  View Countdown
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
         </div>
       </section>
 

@@ -1,11 +1,11 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
@@ -14,11 +14,12 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
 
   const demoAccounts = [
-    { email: "customer@demo.com", password: "password123", role: "customer", redirect: "/hall-menu" },
-    { email: "staff@demo.com", password: "password123", role: "staff", redirect: "/staff-dashboard" },
-    { email: "admin@demo.com", password: "password123", role: "admin", redirect: "/hall-menu" }
+    { email: "customer@demo.com", password: "password123", role: "customer" },
+    { email: "staff@demo.com", password: "password123", role: "staff" },
+    { email: "admin@demo.com", password: "password123", role: "admin" }
   ];
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -43,7 +44,18 @@ const Login = () => {
         description: `Welcome back, ${account.role}!`,
       });
 
-      navigate(account.redirect);
+      // Check if there's a redirect parameter
+      const redirectTo = searchParams.get('redirect');
+      
+      if (redirectTo === 'countdown') {
+        navigate("/countdown");
+      } else if (redirectTo === 'snacks') {
+        navigate("/hall-menu");
+      } else if (account.role === 'staff') {
+        navigate("/staff-dashboard");
+      } else {
+        navigate("/home");
+      }
     } else {
       toast({
         title: "Login Failed",
