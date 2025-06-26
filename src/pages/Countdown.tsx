@@ -3,10 +3,11 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Clock, Film, Calendar, LogOut } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { getUserTickets, isUserLoggedIn, getCurrentUser, UserTicket } from "@/utils/userTickets";
+import { Clock, Film, Calendar, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { getUserTickets, isUserLoggedIn, getCurrentUser, UserTicket, deleteDynamicBooking } from "@/utils/userTickets";
 import { useToast } from "@/hooks/use-toast";
+import Navigation from "@/components/Navigation";
 
 const Countdown = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -39,13 +40,24 @@ const Countdown = () => {
     return () => clearInterval(timer);
   }, [navigate, toast]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    toast({
-      title: "Logged Out",
-      description: "You have been successfully logged out.",
-    });
-    navigate("/");
+  const refreshTickets = () => {
+    const user = getCurrentUser();
+    if (user) {
+      const tickets = getUserTickets(user.email);
+      setUserTickets(tickets);
+    }
+  };
+
+  const handleDeleteBooking = (ticketId: string) => {
+    const user = getCurrentUser();
+    if (user) {
+      deleteDynamicBooking(user.email, ticketId);
+      refreshTickets();
+      toast({
+        title: "Booking Deleted",
+        description: "Your movie booking has been removed.",
+      });
+    }
   };
 
   const getActualStartTime = (ticket: UserTicket) => {
@@ -91,43 +103,7 @@ const Countdown = () => {
 
   return (
     <div className="min-h-screen bg-background-dark">
-      {/* Header */}
-      <header className="border-b border-primary-yellow/40 bg-card-black/50 backdrop-blur-sm sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link to="/" className="flex items-center text-white/70 hover:text-primary-yellow">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Home
-              </Link>
-              <div>
-                <h1 className="text-xl font-bold text-white">My Movie Countdowns</h1>
-                <p className="text-sm text-white/70">Real-time countdown for your booked movies</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="text-right">
-                <div className="text-lg font-mono text-primary-yellow">{formatTime(currentTime)}</div>
-                <div className="text-xs text-white/60">Current Time</div>
-              </div>
-              {currentUser && (
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm text-white">Welcome, {currentUser.name}</span>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={handleLogout}
-                    className="border-primary-yellow/30 text-primary-yellow hover:bg-primary-yellow hover:text-black"
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Logout
-                  </Button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
+      <Navigation />
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-12 text-center">
@@ -169,9 +145,9 @@ const Countdown = () => {
                 <Film className="h-12 w-12 text-primary-yellow mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-2 text-white">No Movies Booked</h3>
                 <p className="text-white/70 mb-4">You don't have any upcoming movie bookings.</p>
-                <Link to="/hall-menu">
+                <Link to="/hall-booking">
                   <Button className="bg-primary-yellow text-black hover:bg-primary-yellow/90">
-                    Browse Movies
+                    Book Movies
                   </Button>
                 </Link>
               </CardContent>
@@ -187,12 +163,29 @@ const Countdown = () => {
                     <div className={`absolute top-0 left-0 right-0 h-1 ${getStatusColor(ticket)}`} />
                     <CardHeader className="pb-3">
                       <div className="flex items-center justify-between mb-2">
-                        <Badge variant="outline" className="text-xs border-primary-yellow/50 text-primary-yellow">
-                          {ticket.hallNumber}
-                        </Badge>
-                        <Badge className={`text-xs ${getStatusColor(ticket)} text-white`}>
-                          {getStatusText(ticket)}
-                        </Badge>
+                        <div className="flex items-center space-x-2">
+                          <Badge variant="outline" className="text-xs border-primary-yellow/50 text-primary-yellow">
+                            {ticket.hallNumber}
+                          </Badge>
+                          {ticket.cinemaName && (
+                            <Badge variant="outline" className="text-xs border-blue-500/50 text-blue-400">
+                              {ticket.cinemaName}
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Badge className={`text-xs ${getStatusColor(ticket)} text-white`}>
+                            {getStatusText(ticket)}
+                          </Badge>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDeleteBooking(ticket.id)}
+                            className="h-6 w-6 p-0 border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
                       <CardTitle className="text-lg leading-tight text-white">{ticket.movieTitle}</CardTitle>
                       <CardDescription className="space-y-1">

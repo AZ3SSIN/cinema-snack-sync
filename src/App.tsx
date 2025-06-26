@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import HallMenu from "./pages/HallMenu";
+import HallBooking from "./pages/HallBooking";
 import Orders from "./pages/Orders";
 import StaffDashboard from "./pages/StaffDashboard";
 import Countdown from "./pages/Countdown";
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/home" element={<Home />} />
           <Route path="/hall-menu" element={<HallMenu />} />
+          <Route path="/hall-booking" element={<HallBooking />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/staff-dashboard" element={<StaffDashboard />} />
           <Route path="/countdown" element={<Countdown />} />
