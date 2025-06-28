@@ -8,8 +8,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Clock, MapPin, ShoppingBag } from "lucide-react";
+import { ArrowLeft, Clock, MapPin, ShoppingBag, RefreshCw } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 interface Order {
   id: string;
@@ -32,7 +33,46 @@ interface Order {
 const Orders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [user, setUser] = useState<any>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastUpdateTime, setLastUpdateTime] = useState<string>("");
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  // Function to load orders from localStorage
+  const loadOrders = (showToast = false) => {
+    if (!user) return;
+    
+    const allOrders = JSON.parse(localStorage.getItem("orders") || "[]");
+    const userOrders = allOrders.filter(
+      (order: Order) => order.userId === user.email
+    );
+    const sortedOrders = userOrders.sort(
+      (a: Order, b: Order) =>
+        new Date(b.orderTime).getTime() - new Date(a.orderTime).getTime()
+    );
+    
+    // Check if orders have actually changed
+    const ordersChanged = JSON.stringify(orders) !== JSON.stringify(sortedOrders);
+    
+    if (ordersChanged) {
+      setOrders(sortedOrders);
+      setLastUpdateTime(new Date().toLocaleTimeString());
+      
+      if (showToast && orders.length > 0) {
+        toast({
+          title: "Orders Updated",
+          description: "Your order status has been updated!",
+        });
+      }
+    }
+  };
+
+  // Manual refresh function
+  const handleManualRefresh = () => {
+    setIsRefreshing(true);
+    loadOrders(true);
+    setTimeout(() => setIsRefreshing(false), 500);
+  };
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -42,19 +82,42 @@ const Orders = () => {
     }
     const parsedUser = JSON.parse(userData);
     setUser(parsedUser);
-
-    // Load orders from localStorage
-    const allOrders = JSON.parse(localStorage.getItem("orders") || "[]");
-    const userOrders = allOrders.filter(
-      (order: Order) => order.userId === parsedUser.email
-    );
-    setOrders(
-      userOrders.sort(
-        (a: Order, b: Order) =>
-          new Date(b.orderTime).getTime() - new Date(a.orderTime).getTime()
-      )
-    );
   }, [navigate]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    // Initial load
+    loadOrders();
+
+    // Set up polling every 2 seconds for real-time updates
+    const polling = setInterval(() => {
+      loadOrders(true);
+    }, 2000);
+
+    // Listen for localStorage changes from other tabs/windows
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "orders" && e.newValue !== e.oldValue) {
+        loadOrders(true);
+      }
+    };
+
+    // Add storage event listener
+    window.addEventListener("storage", handleStorageChange);
+
+    // Listen for focus events to refresh when user returns to tab
+    const handleFocus = () => {
+      loadOrders(true);
+    };
+    window.addEventListener("focus", handleFocus);
+
+    // Cleanup
+    return () => {
+      clearInterval(polling);
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [user, orders]); // Add orders to dependency to detect changes
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -135,17 +198,42 @@ const Orders = () => {
                 <h1 className="text-xl font-bold">My Orders</h1>
                 <p className="text-sm text-muted-foreground">
                   Track your snack deliveries
+                  {lastUpdateTime && (
+                    <span className="ml-2 text-xs">
+                      • Last updated: {lastUpdateTime}
+                    </span>
+                  )}
                 </p>
               </div>
             </div>
-            <Button asChild>
-              <Link to="/hall-menu">Order More Snacks</Link>
-            </Button>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleManualRefresh}
+                disabled={isRefreshing}
+                className="flex items-center space-x-2"
+              >
+                <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                <span>Refresh</span>
+              </Button>
+              <Button asChild>
+                <Link to="/hall-menu">Order More Snacks</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </header>
 
       <div className="container mx-auto px-4 py-6">
+        {/* Real-time indicator */}
+        <div className="flex items-center justify-center mb-4">
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span>Live updates enabled</span>
+          </div>
+        </div>
+
         {orders.length === 0 ? (
           <Card className="max-w-md mx-auto text-center">
             <CardContent className="py-12">
@@ -257,17 +345,17 @@ const Orders = () => {
                           return (
                             <div key={status} className="flex items-center">
                               <div
-                                className={`w-3 h-3 rounded-full border-2 ${
+                                className={`w-3 h-3 rounded-full border-2 transition-all duration-300 ${
                                   isActive
                                     ? isCurrent
-                                      ? "bg-primary border-primary"
+                                      ? "bg-primary border-primary animate-pulse"
                                       : "bg-primary/50 border-primary"
                                     : "bg-muted border-muted-foreground/30"
                                 }`}
                               />
                               {index < 3 && (
                                 <div
-                                  className={`h-0.5 w-8 ${
+                                  className={`h-0.5 w-8 transition-all duration-300 ${
                                     isActive ? "bg-primary" : "bg-muted"
                                   }`}
                                 />
